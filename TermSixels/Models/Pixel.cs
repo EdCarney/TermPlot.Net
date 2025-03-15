@@ -2,9 +2,9 @@
 
 namespace TermSixels.Models;
 
-public struct Pixel
+public class Pixel
 {
-    public Color PixelColor { get; private set; }
+    public Color Color { get; private set; }
 
     public int Red { get; private set; }
     public int Green { get; private set; }
@@ -20,19 +20,19 @@ public struct Pixel
 
     public Pixel(Color color)
     {
-        UpdatePixelColor(color);
+        UpdateColor(color);
     }
 
-    public void UpdatePixelColor(Color color)
+    public void UpdateColor(Color color)
     {
-        PixelColor = color;
+        Color = color;
 
-        Red = 100 * PixelColor.R / Byte.MaxValue;
-        Green = 100 * PixelColor.G / Byte.MaxValue;
-        Blue = 100 * PixelColor.B / Byte.MaxValue;
+        Red = 100 * Color.R / Byte.MaxValue;
+        Green = 100 * Color.G / Byte.MaxValue;
+        Blue = 100 * Color.B / Byte.MaxValue;
 
-        Hue = (int)PixelColor.GetHue();
-        Lightness = (int)(100 * PixelColor.GetBrightness());
-        Saturation = (int)(100 * PixelColor.GetSaturation());
+        Hue = (int)Color.GetHue();
+        Lightness = (int)(100 * Color.GetBrightness());
+        Saturation = (int)(100 * Color.GetSaturation());
     }
 }

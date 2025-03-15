@@ -33,7 +33,7 @@ public class PixelMap
         if (col < 0 || col >= Width)
             throw new ArgumentOutOfRangeException(nameof(col));
 
-        _pixels[row][col].UpdatePixelColor(color);
+        _pixels[row][col].UpdateColor(color);
     }
 
     public void SetPixelColor(Range rowRange, Range colRange, Color color)
@@ -43,6 +43,6 @@ public class PixelMap
 
         foreach (var row in _pixels[rowRange])
             foreach (var pix in row[colRange])
-                pix.UpdatePixelColor(color);
+                pix.UpdateColor(color);
     }
 }
