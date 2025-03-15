@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace TermSixels;
+namespace TermSixels.Models;
 
 public struct Pixel
 {

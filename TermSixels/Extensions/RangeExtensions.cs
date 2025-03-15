@@ -1,4 +1,4 @@
-namespace TermSixels;
+namespace TermSixels.Extensions;
 
 public static class RangeExtensions
 {
