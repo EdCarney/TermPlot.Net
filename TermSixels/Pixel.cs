@@ -4,21 +4,26 @@ namespace TermSixels;
 
 public struct Pixel
 {
-    public Color PixelColor { get; } = Color.Black;
+    public Color PixelColor { get; private set; }
 
-    public int Red { get; }
-    public int Green { get; }
-    public int Blue { get; }
+    public int Red { get; private set; }
+    public int Green { get; private set; }
+    public int Blue { get; private set; }
     public (int, int, int) RgbValues => (Red, Green, Blue);
 
-    public int Hue { get; }
-    public int Lightness { get; }
-    public int Saturation { get; }
+    public int Hue { get; private set; }
+    public int Lightness { get; private set; }
+    public int Saturation { get; private set; }
     public (int, int, int) HlsValues => (Hue, Lightness, Saturation);
 
-    public Pixel() { }
+    public Pixel() : this(Color.Black) { }
 
     public Pixel(Color color)
+    {
+        UpdatePixelColor(color);
+    }
+
+    public void UpdatePixelColor(Color color)
     {
         PixelColor = color;
 
