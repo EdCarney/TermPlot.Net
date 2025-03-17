@@ -21,7 +21,7 @@ public class Sixel
         Color = color;
 
         if (bitMask.Length != _sixelSize)
-            throw new ArgumentException("Sixel bit array must be exact six bits long.", nameof(bitMask));
+            throw new ArgumentException($"Sixel bit array must be exactly six bits long, was instead {bitMask.Length} bits long.", nameof(bitMask));
 
         SixelChar = GetSixelCharFromBitMask(bitMask);
     }

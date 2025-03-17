@@ -27,7 +27,7 @@ public static class IEnumerableExtensions
 
     private static void ValidateIndex(int index, int arrayLength)
     {
-        if (index < 0 || index >= arrayLength)
+        if (index < 0 || index > arrayLength)
             throw new ArgumentOutOfRangeException(nameof(index));
     }
 }

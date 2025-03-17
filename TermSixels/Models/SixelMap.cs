@@ -40,11 +40,12 @@ public class SixelMap
                 {
                     int rangeStart = i * 6;
                     int rangeEnd = (i + 1) * 6;
+                    var currentColor = ColorRegisters[j].Color;
                     var colorMap = pixelMap[rangeStart..rangeEnd, k]
-                        .Select(color => color == ColorRegisters[j].Color)
+                        .Select(color => color == currentColor)
                         .ToArray();
 
-                    _sixels[i][j][k] = new Sixel(new(colorMap));
+                    _sixels[i][j][k] = new Sixel(new(colorMap), currentColor);
                 }
             }
         }
