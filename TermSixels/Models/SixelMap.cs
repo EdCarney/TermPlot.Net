@@ -71,6 +71,7 @@ public class SixelMap
                     sb.Append(_sixels[i][j][k].SixelChar);
                 }
                 sb.Append(SixelControlStatements.CarriageReturn);
+                sb.AppendLine();
             }
             sb.Append(SixelControlStatements.NewLine);
             sb.AppendLine();
