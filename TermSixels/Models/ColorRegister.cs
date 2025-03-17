@@ -8,6 +8,8 @@ public struct ColorRegister
 
     public Color Color { get; private set; }
 
+    public ColorSpace ColorSpace { get; set; }
+
     public int Red { get; private set; }
     public int Green { get; private set; }
     public int Blue { get; private set; }
@@ -20,9 +22,12 @@ public struct ColorRegister
 
     public int RegisterNumber { get; }
 
-    public ColorRegister(Color color)
+    public ColorRegister(Color color) : this(color, ColorSpace.RGB) { }
+
+    public ColorRegister(Color color, ColorSpace colorSpace)
     {
         SetColor(color);
+        ColorSpace = colorSpace;
         RegisterNumber = _totalRegisterCount++;
     }
 
@@ -40,7 +45,7 @@ public struct ColorRegister
     }
 
     public string ToSixelSetString()
-        => $"#{RegisterNumber};1;{Red};{Green};{Blue}";
+        => $"#{RegisterNumber};{(int)ColorSpace};{Red};{Green};{Blue}";
 
     public string ToSixelUseString()
         => $"#{RegisterNumber}";
