@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System.Drawing;
+using System.Text;
+using TermSixels.Models;
 
 namespace TestOutput;
 
@@ -11,10 +13,20 @@ class Program
 
     static void Main(string[] args)
     {
-        var bitmap = GetDataBitmap([], []);
-        var sixelSb = GetBitMapSixelStringBuilder(bitmap);
-        Console.WriteLine(sixelSb.ToString());
+        // var bitmap = GetDataBitmap([], []);
+        // var sixelSb = GetBitMapSixelStringBuilder(bitmap);
+        // Console.WriteLine(sixelSb.ToString());
         //PrintTestMessage();
+
+        var pixelMap = new PixelMap(200, 400);
+        pixelMap.SetPixelColor(10..191, 10..12, Color.White);
+        pixelMap.SetPixelColor(190..191, 10..390, Color.White);
+
+        pixelMap.SetPixelColor(30..32, 30..34, Color.Green);
+        pixelMap.SetPixelColor(40..42, 60..64, Color.Green);
+
+        var sixelMap = new SixelMap(pixelMap);
+        System.Console.WriteLine(sixelMap.ToSixelSequenceString());
     }
 
     static void PrintTestMessage()
