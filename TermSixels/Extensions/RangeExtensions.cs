@@ -1,17 +1,25 @@
 namespace TermSixels.Extensions;
 
-public static class RangeExtensions
+public static class IEnumerableExtensions
 {
-    public static void ValidateBound(this Range range, int arrayLength)
+    public static void ValidateBound<T>(this IEnumerable<T> enumerable, Range range)
     {
-        int start = GetIndexFromStart(range.Start, arrayLength);
-        int end = GetIndexFromStart(range.End, arrayLength);
+        var (start, end) = enumerable.GetBoundsFromStart(range);
+        int length = enumerable.Count();
 
-        ValidateIndex(start, arrayLength);
-        ValidateIndex(end, arrayLength);
+        ValidateIndex(start, length);
+        ValidateIndex(end, length);
 
         if (end < start)
             throw new ArgumentException("Range end is before start");
+    }
+
+    public static (int start, int end) GetBoundsFromStart<T>(this IEnumerable<T> enumerable, Range range)
+    {
+        int length = enumerable.Count();
+        int start = GetIndexFromStart(range.Start, length);
+        int end = GetIndexFromStart(range.End, length);
+        return (start, end);
     }
 
     private static int GetIndexFromStart(Index index, int arrayLength)
