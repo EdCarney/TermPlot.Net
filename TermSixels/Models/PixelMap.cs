@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Text;
 using TermSixels.Extensions;
 
 namespace TermSixels.Models;
@@ -31,7 +32,7 @@ public class PixelMap
         Width = width;
 
         _pixels = new Color[Height]
-            .Select(row => new Color[Width])
+            .Select(row => Enumerable.Repeat(Color.Black, Width).ToArray())
             .ToArray();
     }
 
@@ -122,5 +123,21 @@ public class PixelMap
         for (int i = rowStart; i < rowEnd; i++)
             for (int j = colStart; j < colEnd; j++)
                 _pixels[i][j] = color;
+    }
+
+    public string ToBitMapString()
+    {
+        var sb = new StringBuilder();
+
+        foreach (var row in _pixels)
+        {
+            foreach (var pix in row)
+            {
+                sb.Append(pix == Color.Black ? "0" : "1");
+            }
+            sb.AppendLine();
+        }
+
+        return sb.ToString();
     }
 }
