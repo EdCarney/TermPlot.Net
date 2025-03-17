@@ -42,7 +42,13 @@ public class PixelMap
         get
         {
             _pixels.ValidateBound(rowRange);
-            return _pixels[rowRange][col];
+            var (start, end) = _pixels.GetBoundsFromStart(rowRange);
+
+            var pixs = new Color[end - start];
+            for (int i = start; i < end; i++)
+                pixs[i - start] = _pixels[i][col];
+
+            return pixs;
         }
     }
 
@@ -61,7 +67,18 @@ public class PixelMap
         {
             _pixels.ValidateBound(rowRange);
             _pixels.First().ValidateBound(colRange);
-            return _pixels[rowRange][colRange];
+
+            var (rowStart, rowEnd) = _pixels.GetBoundsFromStart(rowRange);
+            var (colStart, colEnd) = _pixels.First().GetBoundsFromStart(colRange);
+
+            var pixs = new Color[rowEnd - rowStart]
+                .Select(row => new Color[colEnd - colStart])
+                .ToArray();
+            for (int i = rowStart; i < rowEnd; i++)
+                for (int j = colStart; j < colEnd; j++)
+                    pixs[i - rowStart][j - colStart] = _pixels[i][j];
+
+            return pixs;
         }
     }
 
