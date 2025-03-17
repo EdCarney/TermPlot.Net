@@ -84,19 +84,37 @@ public class PixelMap
 
     public void SetPixelColor(int row, int col, Color color)
     {
-        if (row < 0 || row >= Height)
-            throw new ArgumentOutOfRangeException(nameof(row));
-
-        if (col < 0 || col >= Width)
-            throw new ArgumentOutOfRangeException(nameof(col));
-
+        _pixels.ValidateBound(row);
+        _pixels.First().ValidateBound(col);
         _pixels[row][col] = color;
+    }
+
+    public void SetPixelColor(int row, Range colRange, Color color)
+    {
+        _pixels.ValidateBound(row);
+        _pixels.First().ValidateBound(colRange);
+
+        var (colStart, colEnd) = _pixels.First().GetBoundsFromStart(colRange);
+
+        for (int j = colStart; j < colEnd; j++)
+            _pixels[row][j] = color;
+    }
+
+    public void SetPixelColor(Range rowRange, int col, Color color)
+    {
+        _pixels.ValidateBound(rowRange);
+        _pixels.First().ValidateBound(col);
+
+        var (rowStart, rowEnd) = _pixels.GetBoundsFromStart(rowRange);
+
+        for (int i = rowStart; i < rowEnd; i++)
+            _pixels[i][col] = color;
     }
 
     public void SetPixelColor(Range rowRange, Range colRange, Color color)
     {
         _pixels.ValidateBound(rowRange);
-        _pixels.First().ValidateBound(colRange);
+        _pixels.ValidateBound(colRange);
 
         var (rowStart, rowEnd) = _pixels.GetBoundsFromStart(rowRange);
         var (colStart, colEnd) = _pixels.First().GetBoundsFromStart(colRange);
