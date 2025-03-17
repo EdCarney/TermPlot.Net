@@ -114,7 +114,7 @@ public class PixelMap
     public void SetPixelColor(Range rowRange, Range colRange, Color color)
     {
         _pixels.ValidateBound(rowRange);
-        _pixels.ValidateBound(colRange);
+        _pixels.First().ValidateBound(colRange);
 
         var (rowStart, rowEnd) = _pixels.GetBoundsFromStart(rowRange);
         var (colStart, colEnd) = _pixels.First().GetBoundsFromStart(colRange);
