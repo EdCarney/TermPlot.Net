@@ -47,6 +47,8 @@ public class PixelMap
         Height = correctedH % 6 == 0 ? correctedH : correctedH + 6 - correctedH % 6;
         Width = correctedW;
 
+        System.Console.WriteLine($"H: {Height}, W: {Width}");
+
         _pixels = new Color[Height]
             .Select(row => Enumerable.Repeat(Color.Black, Width).ToArray())
             .ToArray();
@@ -150,6 +152,10 @@ public class PixelMap
     public void SetPixelColor(Range rowRange, Range colRange, Color color)
     {
         (rowRange, colRange) = CorrectHeightWidth(rowRange, colRange);
+
+        rowRange.PrintRange();
+        colRange.PrintRange();
+
         _pixels.ValidateBound(rowRange);
         _pixels.First().ValidateBound(colRange);
 
@@ -183,8 +189,8 @@ public class PixelMap
                 return (heightRange, width * PixelRatio);
             case PixelRatioCorrection.AdjustHeight:
                 var (hStart, hEnd) = _pixels.GetBoundsFromStart(heightRange);
-                hStart *= PixelRatio;
-                hEnd *= PixelRatio;
+                hStart *= heightRange.Start.IsFromEnd ? 1 : PixelRatio;
+                hEnd *= heightRange.End.IsFromEnd ? 1 : PixelRatio;
                 return (hStart..hEnd, width);
             default:
                 return (heightRange, width);
@@ -198,8 +204,8 @@ public class PixelMap
         {
             case PixelRatioCorrection.AdjustWidth:
                 var (wStart, wEnd) = _pixels.First().GetBoundsFromStart(widthRange);
-                wStart *= PixelRatio;
-                wEnd *= PixelRatio;
+                wStart *= widthRange.Start.IsFromEnd ? 1 : PixelRatio;
+                wEnd *= widthRange.End.IsFromEnd ? 1 : PixelRatio;
                 return (height, wStart..wEnd);
             case PixelRatioCorrection.AdjustHeight:
                 return (height * PixelRatio, widthRange);
@@ -214,20 +220,20 @@ public class PixelMap
         {
             case PixelRatioCorrection.AdjustWidth:
                 var (wStart, wEnd) = _pixels.First().GetBoundsFromStart(widthRange);
-                wStart *= PixelRatio;
-                wEnd *= PixelRatio;
+                wStart *= widthRange.Start.IsFromEnd ? 1 : PixelRatio;
+                wEnd *= widthRange.End.IsFromEnd ? 1 : PixelRatio;
                 return (heightRange, wStart..wEnd);
             case PixelRatioCorrection.AdjustHeight:
                 var (hStart, hEnd) = _pixels.GetBoundsFromStart(heightRange);
-                hStart *= PixelRatio;
-                hEnd *= PixelRatio;
+                hStart *= heightRange.Start.IsFromEnd ? 1 : PixelRatio;
+                hEnd *= heightRange.End.IsFromEnd ? 1 : PixelRatio;
                 return (hStart..hEnd, widthRange);
             default:
                 return (heightRange, widthRange);
         }
     }
 
-    public string ToBitMapString()
+    public virtual string ToBitMapString()
     {
         var sb = new StringBuilder();
 
