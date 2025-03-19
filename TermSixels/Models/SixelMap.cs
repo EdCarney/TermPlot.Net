@@ -26,16 +26,14 @@ public class SixelMap
             .Select(color => new ColorRegister(color))
             .ToArray();
 
-        _sixels = new Sixel[Height]
-            .Select(row => new Sixel[ColorRegisters.Count()]
-                .Select(col => new Sixel[Width])
-                .ToArray())
-            .ToArray();
+        _sixels = new Sixel[Height][][];
 
         for (int i = 0; i < Height; i++)
         {
+            _sixels[i] = new Sixel[ColorRegisters.Count()][];
             for (int j = 0; j < ColorRegisters.Count(); j++)
             {
+                _sixels[i][j] = new Sixel[Width];
                 for (int k = 0; k < Width; k++)
                 {
                     int rangeStart = i * 6;

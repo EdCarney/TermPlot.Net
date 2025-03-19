@@ -12,6 +12,10 @@ public class PixelMap
 
     public int Width { get; }
 
+    public PixelRatioCorrection PixelRatioCorrection { get; }
+
+    public int PixelRatio { get; }
+
     public HashSet<Color> AllUniqueColors
     {
         get
@@ -24,27 +28,50 @@ public class PixelMap
         }
     }
 
-    public PixelMap(int size) : this(size, size) { }
+    public PixelMap(
+            int size,
+            PixelRatioCorrection pixelRatioCorrection = PixelRatioCorrection.NoCorrection,
+            int pixelRatio = 1)
+        : this(size, size, pixelRatioCorrection, pixelRatio) { }
 
-    public PixelMap(int height, int width)
+    public PixelMap(
+            int height,
+            int width,
+            PixelRatioCorrection pixelRatioCorrection = PixelRatioCorrection.NoCorrection,
+            int pixelRatio = 1)
     {
-        Height = height % 6 == 0 ? height : height + (6 - height % 6);
-        Width = width;
+        PixelRatioCorrection = pixelRatioCorrection;
+        PixelRatio = pixelRatio;
+
+        var (correctedH, correctedW) = CorrectHeightWidth(height, width);
+        Height = correctedH % 6 == 0 ? correctedH : correctedH + 6 - correctedH % 6;
+        Width = correctedW;
 
         _pixels = new Color[Height]
             .Select(row => Enumerable.Repeat(Color.Black, Width).ToArray())
             .ToArray();
     }
 
-    public Color this[int row, int col] => _pixels[row][col];
+    public Color this[int row, int col]
+    {
+        get
+        {
+            (row, col) = CorrectHeightWidth(row, col);
+            _pixels.ValidateBound(row);
+            _pixels.First().ValidateBound(col);
+
+            return _pixels[row][col];
+        }
+    }
 
     public Color[] this[Range rowRange, int col]
     {
         get
         {
             _pixels.ValidateBound(rowRange);
-            var (start, end) = _pixels.GetBoundsFromStart(rowRange);
+            _pixels.First().ValidateBound(col);
 
+            var (start, end) = _pixels.GetBoundsFromStart(rowRange);
             var pixs = new Color[end - start];
             for (int i = start; i < end; i++)
                 pixs[i - start] = _pixels[i][col];
@@ -57,7 +84,10 @@ public class PixelMap
     {
         get
         {
+            (row, colRange) = CorrectHeightWidth(row, colRange);
+            _pixels.ValidateBound(row);
             _pixels.First().ValidateBound(colRange);
+
             return _pixels[row][colRange];
         }
     }
@@ -66,6 +96,7 @@ public class PixelMap
     {
         get
         {
+            (rowRange, colRange) = CorrectHeightWidth(rowRange, colRange);
             _pixels.ValidateBound(rowRange);
             _pixels.First().ValidateBound(colRange);
 
@@ -85,13 +116,16 @@ public class PixelMap
 
     public void SetPixelColor(int row, int col, Color color)
     {
+        (row, col) = CorrectHeightWidth(row, col);
         _pixels.ValidateBound(row);
         _pixels.First().ValidateBound(col);
+
         _pixels[row][col] = color;
     }
 
     public void SetPixelColor(int row, Range colRange, Color color)
     {
+        (row, colRange) = CorrectHeightWidth(row, colRange);
         _pixels.ValidateBound(row);
         _pixels.First().ValidateBound(colRange);
 
@@ -103,6 +137,7 @@ public class PixelMap
 
     public void SetPixelColor(Range rowRange, int col, Color color)
     {
+        (rowRange, col) = CorrectHeightWidth(rowRange, col);
         _pixels.ValidateBound(rowRange);
         _pixels.First().ValidateBound(col);
 
@@ -114,6 +149,7 @@ public class PixelMap
 
     public void SetPixelColor(Range rowRange, Range colRange, Color color)
     {
+        (rowRange, colRange) = CorrectHeightWidth(rowRange, colRange);
         _pixels.ValidateBound(rowRange);
         _pixels.First().ValidateBound(colRange);
 
@@ -123,6 +159,72 @@ public class PixelMap
         for (int i = rowStart; i < rowEnd; i++)
             for (int j = colStart; j < colEnd; j++)
                 _pixels[i][j] = color;
+    }
+
+    private (int height, int width) CorrectHeightWidth(int height, int width)
+    {
+        switch (PixelRatioCorrection)
+        {
+            case PixelRatioCorrection.AdjustWidth:
+                return (height, width * PixelRatio);
+            case PixelRatioCorrection.AdjustHeight:
+                return (height * PixelRatio, width);
+            default:
+                return (height, width);
+
+        }
+    }
+
+    private (Range heightRange, int width) CorrectHeightWidth(Range heightRange, int width)
+    {
+        switch (PixelRatioCorrection)
+        {
+            case PixelRatioCorrection.AdjustWidth:
+                return (heightRange, width * PixelRatio);
+            case PixelRatioCorrection.AdjustHeight:
+                var (hStart, hEnd) = _pixels.GetBoundsFromStart(heightRange);
+                hStart *= PixelRatio;
+                hEnd *= PixelRatio;
+                return (hStart..hEnd, width);
+            default:
+                return (heightRange, width);
+
+        }
+    }
+
+    private (int height, Range widthRange) CorrectHeightWidth(int height, Range widthRange)
+    {
+        switch (PixelRatioCorrection)
+        {
+            case PixelRatioCorrection.AdjustWidth:
+                var (wStart, wEnd) = _pixels.First().GetBoundsFromStart(widthRange);
+                wStart *= PixelRatio;
+                wEnd *= PixelRatio;
+                return (height, wStart..wEnd);
+            case PixelRatioCorrection.AdjustHeight:
+                return (height * PixelRatio, widthRange);
+            default:
+                return (height, widthRange);
+        }
+    }
+
+    private (Range heightRange, Range widthRange) CorrectHeightWidth(Range heightRange, Range widthRange)
+    {
+        switch (PixelRatioCorrection)
+        {
+            case PixelRatioCorrection.AdjustWidth:
+                var (wStart, wEnd) = _pixels.First().GetBoundsFromStart(widthRange);
+                wStart *= PixelRatio;
+                wEnd *= PixelRatio;
+                return (heightRange, wStart..wEnd);
+            case PixelRatioCorrection.AdjustHeight:
+                var (hStart, hEnd) = _pixels.GetBoundsFromStart(heightRange);
+                hStart *= PixelRatio;
+                hEnd *= PixelRatio;
+                return (hStart..hEnd, widthRange);
+            default:
+                return (heightRange, widthRange);
+        }
     }
 
     public string ToBitMapString()
