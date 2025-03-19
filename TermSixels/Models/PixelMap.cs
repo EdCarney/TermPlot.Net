@@ -47,8 +47,6 @@ public class PixelMap
         Height = correctedH % 6 == 0 ? correctedH : correctedH + 6 - correctedH % 6;
         Width = correctedW;
 
-        System.Console.WriteLine($"H: {Height}, W: {Width}");
-
         _pixels = new Color[Height]
             .Select(row => Enumerable.Repeat(Color.Black, Width).ToArray())
             .ToArray();
@@ -152,10 +150,6 @@ public class PixelMap
     public void SetPixelColor(Range rowRange, Range colRange, Color color)
     {
         (rowRange, colRange) = CorrectHeightWidth(rowRange, colRange);
-
-        rowRange.PrintRange();
-        colRange.PrintRange();
-
         _pixels.ValidateBound(rowRange);
         _pixels.First().ValidateBound(colRange);
 

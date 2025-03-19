@@ -64,9 +64,6 @@ public class PixelGraph : PixelMap
         // draw x-axis
         var xRowRange = ^(_drawingConfig.LegendBufferBottom + _drawingConfig.LegendThickness)..^_drawingConfig.LegendBufferBottom;
         var xColRange = _drawingConfig.LegendBufferLeft..^_drawingConfig.LegendBufferRight;
-
-        xRowRange.PrintRange();
-        xColRange.PrintRange();
         SetPixelColor(xRowRange, xColRange, Color.White);
     }
 
