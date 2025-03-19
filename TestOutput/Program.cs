@@ -13,20 +13,52 @@ class Program
 
     static void Main(string[] args)
     {
-        // var bitmap = GetDataBitmap([], []);
-        // var sixelSb = GetBitMapSixelStringBuilder(bitmap);
-        // Console.WriteLine(sixelSb.ToString());
-        //PrintTestMessage();
 
-        var pixelMap = new PixelMap(200, 400);
-        pixelMap.SetPixelColor(10..191, 10..12, Color.White);
-        pixelMap.SetPixelColor(190..191, 10..390, Color.White);
+        var graph = new PixelGraph(500, 500, PixelRatioCorrection.AdjustWidth, pixelRatio: 2);
+        System.Console.WriteLine(graph.ToBitMapString());
 
-        pixelMap.SetPixelColor(30..32, 30..34, Color.Green);
-        pixelMap.SetPixelColor(40..42, 60..64, Color.Green);
+        // TODO: can't quite do this yet; need to figure out how to get current terminal width in pixels
+        //
+        // term_data.WriteLine("\e[14t");
+        //
+        //
+        // int colCount = Console.WindowWidth;
+        // Font font = Console.OutputEncoding.GetString(new byte[] { 0x00 });
+        //
+        // double charWidthInPixels;
+        //
+        // using (var g = Graphics.FromImage(new Bitmap(1, 1)))
+        // {
+        //     charWidthInPixels = g.MeasureString("W", font).Width;
+        // }
+        //
+        // int termWidthInPixels = (int)(colCount * charWidthInPixels);
+    }
 
+    static void TestPrintSixelMap()
+    {
+        var pixelMap = new PixelMap(1000);
+        pixelMap.SetPixelColor(10..991, 10, Color.White);
+        pixelMap.SetPixelColor(990, 10..991, Color.White);
+        pixelMap.SetPixelColor(990, 50..70, Color.Green);
         var sixelMap = new SixelMap(pixelMap);
-        System.Console.WriteLine(sixelMap.ToSixelSequenceString());
+        Console.WriteLine(sixelMap.ToSixelSequenceString());
+
+        var pixelMap1 = new PixelMap(1000, PixelRatioCorrection.AdjustWidth, pixelRatio: 2);
+        pixelMap1.SetPixelColor(10..991, 10, Color.White);
+        pixelMap1.SetPixelColor(990, 10..991, Color.White);
+        pixelMap1.SetPixelColor(990, 50..70, Color.Green);
+        var sixelMap1 = new SixelMap(pixelMap1);
+        Console.WriteLine(sixelMap1.ToSixelSequenceString());
+
+        string dirPath = @"/home/edcarney/personal/TermPlot.Net";
+
+        using var sw_sixel = File.CreateText(Path.Join(dirPath, "sixel_img.txt"));
+        using var sw_pixel = File.CreateText(Path.Join(dirPath, "pixel_img.txt"));
+        using var term_data = File.CreateText(Path.Join(dirPath, "term_data.txt"));
+
+        sw_sixel.WriteLine(sixelMap.ToSixelSequenceString());
+        sw_pixel.WriteLine(pixelMap.ToBitMapString());
     }
 
     static void PrintTestMessage()
