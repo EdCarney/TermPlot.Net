@@ -14,7 +14,31 @@ class Program
     static void Main(string[] args)
     {
 
-        var graph = new PixelGraph(500, 500, PixelRatioCorrection.AdjustWidth, pixelRatio: 2);
+        var testDataSeriesX_0 = Enumerable.Range(10, 50);
+        var testDataSeriesY_0 = testDataSeriesX_0.Select(x => x * 10);
+
+        var testDataSeriesX_1 = Enumerable.Range(10, 50);
+        var testDataSeriesY_1 = testDataSeriesX_1.Select(x => x * x);
+
+        var testDataSeriesX_2 = Enumerable.Range(10, 50);
+        var testDataSeriesY_2 = testDataSeriesX_1.Select(x => x * x * x);
+
+        var testDataSeriesX_3 = Enumerable.Range(10, 50).Select(x => (double)x);
+        var testDataSeriesY_3 = testDataSeriesX_2.Select(x => Math.Sin(x));
+
+        var graph = new PixelGraph(500, 500, PixelRatioCorrection.AdjustWidth, pixelRatio: 2)
+            .WithConfig(
+                    new()
+                    {
+                        LegendBufferTop = 5,
+                        LegendBufferBottom = 5,
+                        LegendBufferRight = 5,
+                        LegendBufferLeft = 5,
+                        LegendThickness = 2
+                    })
+            .WithSeries<int>(testDataSeriesX_0, testDataSeriesY_0, Color.White)
+            .WithSeries<int>(testDataSeriesX_1, testDataSeriesY_1, Color.Green);
+        //.WithSeries<int>(testDataSeriesX_2, testDataSeriesY_2, Color.Yellow);
         System.Console.WriteLine(graph.ToBitMapString());
 
         // TODO: can't quite do this yet; need to figure out how to get current terminal width in pixels
