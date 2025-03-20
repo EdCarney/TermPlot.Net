@@ -1,3 +1,3 @@
 namespace TermSixels.Models;
 
-public record PixelGraphDataPoint(int x, int y);
+public record PixelGraphDataPoint(double x, double y);

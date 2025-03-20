@@ -150,6 +150,10 @@ public class PixelMap
     public void SetPixelColor(Range rowRange, Range colRange, Color color)
     {
         (rowRange, colRange) = CorrectHeightWidth(rowRange, colRange);
+
+        System.Console.WriteLine($"Corrected col range: {colRange.ToRangeString()}");
+        System.Console.WriteLine($"Corrected row range: {rowRange.ToRangeString()}");
+
         _pixels.ValidateBound(rowRange);
         _pixels.First().ValidateBound(colRange);
 

@@ -1,3 +1,5 @@
+using System.Drawing;
+
 namespace TermSixels.Models;
 
 public class PixelGraphDrawingConfig
@@ -14,6 +16,7 @@ public class PixelGraphDrawingConfig
     // legend drawing config
 
     public int LegendThickness { get; set; } = 2;
+    public Color LegendColor { get; set; } = Color.White;
 
     // buffer area for the data within the legend
 
@@ -29,4 +32,8 @@ public class PixelGraphDrawingConfig
     public int? LegendMaxX { get; set; }
     public int? LegendMaxY { get; set; }
 
+    // default values for data series
+
+    public int DefaultDataSeriesRadius { get; set; } = 1;
+    public Color DefaultDataSeriesColor { get; set; } = Color.White;
 }

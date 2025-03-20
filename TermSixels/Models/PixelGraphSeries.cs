@@ -1,28 +1,45 @@
+using System.Collections;
 using System.Drawing;
+using System.Numerics;
+using TermSixels.Interfaces;
 
 namespace TermSixels.Models;
 
-public struct PixelGraphSeries
+public struct PixelGraphSeries<T> : IPixelGraphSeries where T : INumber<T>
 {
     public List<PixelGraphDataPoint> DataPoints { get; }
 
-    public Color Color { get; set; } = Color.White;
+    public Color Color { get; set; }
 
-    public int PointSize { get; set; } = 2;
+    public int PointSize { get; set; }
 
-    public PixelGraphSeries(IEnumerable<int> x, IEnumerable<int> y, Color? color = null, int? pointSize = null)
+    public PixelGraphSeries(IEnumerable<T> x, IEnumerable<T> y, Color color, int pointSize)
     {
-        Color = color ?? Color;
-        PointSize = pointSize ?? PointSize;
-        DataPoints = x.Zip(y)
+        Color = color;
+        PointSize = pointSize;
+
+        // create data points, converting INumber<T> to double
+
+        DataPoints = x.Select(xVal => double.CreateChecked(xVal))
+            .Zip(y.Select(yVal => double.CreateChecked(yVal)))
             .Select(dataPoint => new PixelGraphDataPoint(dataPoint.First, dataPoint.Second))
             .ToList();
     }
 
-    public PixelGraphSeries(int x, int y, Color? color = null, int? pointSize = null)
+    public PixelGraphSeries(T x, T y, Color color, int pointSize)
     {
-        Color = color ?? Color;
-        PointSize = pointSize ?? PointSize;
-        DataPoints = [new(x, y)];
+        Color = color;
+        PointSize = pointSize;
+        DataPoints = [new(double.CreateChecked(x), double.CreateChecked(y))];
+    }
+
+    public IEnumerator<PixelGraphDataPoint> GetEnumerator()
+    {
+        return DataPoints.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }
