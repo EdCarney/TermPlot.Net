@@ -116,8 +116,8 @@ public class PixelGraph : PixelMap
         double scaleFactorX = (double)(_uncorrectedWidth - dataDrawingAreaAjustmentX) / dataRangeX;
         double scaleFactorY = (double)(_uncorrectedHeight - dataDrawingAreaAjustmentY) / dataRangeY;
 
-        System.Console.WriteLine($"Scale factor x: {scaleFactorX}");
-        System.Console.WriteLine($"Scale factor y: {scaleFactorY}");
+        // System.Console.WriteLine($"Scale factor x: {scaleFactorX}");
+        // System.Console.WriteLine($"Scale factor y: {scaleFactorY}");
 
         // create anons for scaling points in x and y
         var scalePointX = (double x) => (x - minX) * scaleFactorX;
@@ -140,14 +140,14 @@ public class PixelGraph : PixelMap
                 int rowStart = (int)scaledY - series.PointSize;
                 int rowEnd = (int)scaledY + series.PointSize;
 
-                System.Console.WriteLine();
-                System.Console.WriteLine($"Non-scaled point: ({point.x}, {point.y})");
-                System.Console.WriteLine($"Scaled point: ({scaledX}, {scaledY})");
+                // System.Console.WriteLine();
+                // System.Console.WriteLine($"Non-scaled point: ({point.x}, {point.y})");
+                // System.Console.WriteLine($"Scaled point: ({scaledX}, {scaledY})");
 
                 Range colRange = colStart..colEnd;
                 Range rowRange = ^rowEnd..^rowStart;
-                System.Console.WriteLine($"Col range: {colRange.ToRangeString()}");
-                System.Console.WriteLine($"Row range: {rowRange.ToRangeString()}");
+                // System.Console.WriteLine($"Col range: {colRange.ToRangeString()}");
+                // System.Console.WriteLine($"Row range: {rowRange.ToRangeString()}");
 
                 // need to reverse drawing along y-axis since larger indexes
                 // mean further 'down' on the pixel map by default
