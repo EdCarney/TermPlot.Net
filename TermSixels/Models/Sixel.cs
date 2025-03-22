@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Drawing;
+using TermSixels.Extensions;
 
 namespace TermSixels.Models;
 
@@ -25,7 +26,7 @@ public class Sixel
     /// <summary>
     /// Create a new black sixel from a bit mask.
     /// </summary>
-    /// <param name="bitMask">Bit representation of the vertical pixels with the first value being the topmost vertical pixel.</param>
+    /// <param name="bitMask">Bit representation of six vertical pixels with the first value being the topmost vertical pixel.</param>
     /// <exception cref="ArgumentException">
     /// Thrown if bit mask is not exactly six bits long.
     /// </exception>
@@ -34,18 +35,16 @@ public class Sixel
     /// <summary>
     /// Create a new colored sixel from a bit mask.
     /// </summary>
-    /// <param name="bitMask">Bit representation of the vertical pixels with the first value being the topmost vertical pixel.</param>
+    /// <param name="bitMask">Bit representation of six vertical pixels with the first value being the topmost vertical pixel.</param>
     /// <param name="color">Color of the sixel.</param>
     /// <exception cref="ArgumentException">
     /// Thrown if bit mask is not exactly six bits long.
     /// </exception>
     public Sixel(BitArray bitMask, Color color)
     {
+        bitMask.Count.Validate(ValidatorComparison.EQ, _sixelSize, nameof(bitMask.Count));
+
         Color = color;
-
-        if (bitMask.Length != _sixelSize)
-            throw new ArgumentException($"Sixel bit array must be exactly six bits long, was instead {bitMask.Length} bits long.", nameof(bitMask));
-
         SixelChar = GetSixelCharFromBitMask(bitMask);
     }
 

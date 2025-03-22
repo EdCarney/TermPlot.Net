@@ -14,12 +14,41 @@ public class PixelGraph : PixelMap
     private int _uncorrectedHeight;
     private int _uncorrectedWidth;
 
+    /// <summary>
+    /// Create a new square pixel graph.
+    /// </summary>
+    /// <param name="size">The height and wide of the map.</param>
+    /// <param name="pixelRatioCorrection">
+    /// Optional pixel ratio correction type. This is used to correct drawing size if pixel representation
+    /// in the terminal is not square.
+    /// </param>
+    /// <param name="pixelRatio">
+    /// The ratio between pixel height and width. Note this must be a number greater than or equal to one.
+    /// </param>
+    /// <exception cref="ArgumentException">
+    /// Thrown if the specified size or pixel ratio are invalid.
+    /// </exception>
     public PixelGraph(
             int size,
             PixelRatioCorrection pixelRatioCorrection = PixelRatioCorrection.NoCorrection,
             int pixelRatio = 1)
         : this(size, size, pixelRatioCorrection, pixelRatio) { }
 
+    /// <summary>
+    /// Create a new pixel graph of a specified height and width.
+    /// </summary>
+    /// <param name="height">The height the map.</param>
+    /// <param name="width">The width the map.</param>
+    /// <param name="pixelRatioCorrection">
+    /// Optional pixel ratio correction type. This is used to correct drawing size if pixel representation
+    /// in the terminal is not square.
+    /// </param>
+    /// <param name="pixelRatio">
+    /// The ratio between pixel height and width. Note this must be a number greater than or equal to one.
+    /// </param>
+    /// <exception cref="ArgumentException">
+    /// Thrown if the specified size or pixel ratio are invalid.
+    /// </exception>
     public PixelGraph(
             int height,
             int width,
@@ -31,18 +60,34 @@ public class PixelGraph : PixelMap
         _uncorrectedWidth = width;
     }
 
+    /// <summary>
+    /// Override the default configuration for the graph with custom values.
+    /// </summary>
     public PixelGraph WithConfig(PixelGraphDrawingConfig drawingConfig)
     {
         _drawingConfig = drawingConfig;
         return this;
     }
 
+    /// <summary>
+    /// Adds a data series to the graph with the default color and point size as set in the graph drawing
+    /// configuration.
+    /// </summary>
     public PixelGraph WithSeries<T>(IEnumerable<T> x, IEnumerable<T> y) where T : INumber<T>
         => WithSeries(x, y, _drawingConfig.DefaultDataSeriesColor, _drawingConfig.DefaultDataSeriesRadius);
 
+    /// <summary>
+    /// Adds a data series to the graph with the specified color and the default point size as set in the
+    /// default drawing configuration.
+    /// graph drawing configuration.
+    /// </summary>
     public PixelGraph WithSeries<T>(IEnumerable<T> x, IEnumerable<T> y, Color color) where T : INumber<T>
         => WithSeries(x, y, color, _drawingConfig.DefaultDataSeriesRadius);
 
+    /// <summary>
+    /// Adds a data series to the graph with the specified color and point size.
+    /// graph drawing configuration.
+    /// </summary>
     public PixelGraph WithSeries<T>(IEnumerable<T> x, IEnumerable<T> y, Color color, int pointRadius) where T : INumber<T>
     {
         if (x.Count() != y.Count())
@@ -52,18 +97,34 @@ public class PixelGraph : PixelMap
         return this;
     }
 
+    /// <summary>
+    /// Adds a single point to the graph with the default color and point size as set in the graph drawing
+    /// configuration.
+    /// </summary>
     public PixelGraph WithSeries<T>(T x, T y) where T : INumber<T>
         => WithSeries(x, y, _drawingConfig.DefaultDataSeriesColor, _drawingConfig.DefaultDataSeriesRadius);
 
+    /// <summary>
+    /// Adds a single point to the graph with the specified color and the default point size as set in the
+    /// default drawing configuration.
+    /// graph drawing configuration.
+    /// </summary>
     public PixelGraph WithSeries<T>(T x, T y, Color color) where T : INumber<T>
         => WithSeries(x, y, color, _drawingConfig.DefaultDataSeriesRadius);
 
+    /// <summary>
+    /// Adds a single point to the graph with the specified color and point size.
+    /// graph drawing configuration.
+    /// </summary>
     public PixelGraph WithSeries<T>(T x, T y, Color color, int pointSize) where T : INumber<T>
     {
         _pixelSeries.Add(new PixelGraphSeries<T>(x, y, color, pointSize));
         return this;
     }
 
+    /// <summary>
+    /// Generate the sixel image sequence for this pixel graph.
+    /// </summary>
     public override string ToBitMapString()
     {
         AddLegend();

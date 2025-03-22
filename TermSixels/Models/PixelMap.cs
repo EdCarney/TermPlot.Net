@@ -14,10 +14,22 @@ public class PixelMap
 
     public int Width { get; }
 
+    /// <summary>
+    /// Determines how the pixel ratio correction should be applied. Since the pixel ratio must
+    /// be equal to or greater than one (1), this is used to ensure that the correct dimension is
+    /// adjusted.
+    /// </summary>
     public PixelRatioCorrection PixelRatioCorrection { get; }
 
+    /// <summary>
+    /// The ratio between pixel dimensions. Must be a number equal to or greater than one (1), so
+    /// this should be computed as [larger pixel dimension] / [smaller pixel dimension].
+    /// </summary>
     public int PixelRatio { get; }
 
+    /// <summary>
+    /// The set of all unique colors that currently exist in the pixel map.
+    /// </summary>
     public HashSet<Color> AllUniqueColors
     {
         get

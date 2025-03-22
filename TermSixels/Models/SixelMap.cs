@@ -73,14 +73,14 @@ public class SixelMap
 
         sb.AppendLine();
         foreach (var colorReg in ColorRegisters)
-            sb.Append(colorReg.ToSixelSetString());
+            sb.Append(colorReg.SixelSetString);
 
         sb.AppendLine();
         for (int i = 0; i < Height; i++)
         {
             for (int j = 0; j < ColorRegisters.Count(); j++)
             {
-                sb.Append(ColorRegisters[j].ToSixelUseString());
+                sb.Append(ColorRegisters[j].SixelUseString);
 
                 // iterators for using repeat count
                 char prevChar = _sixels[i][j].First().SixelChar;
