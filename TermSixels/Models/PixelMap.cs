@@ -30,18 +30,51 @@ public class PixelMap
         }
     }
 
+    /// <summary>
+    /// Create a new square pixel map.
+    /// </summary>
+    /// <param name="size">The height and wide of the map.</param>
+    /// <param name="pixelRatioCorrection">
+    /// Optional pixel ratio correction type. This is used to correct drawing size if pixel representation
+    /// in the terminal is not square.
+    /// </param>
+    /// <param name="pixelRatio">
+    /// The ratio between pixel height and width. Note this must be a number greater than or equal to one.
+    /// </param>
+    /// <exception cref="ArgumentException">
+    /// Thrown if the specified size or pixel ratio are invalid.
+    /// </exception>
     public PixelMap(
             int size,
             PixelRatioCorrection pixelRatioCorrection = PixelRatioCorrection.NoCorrection,
             int pixelRatio = 1)
         : this(size, size, pixelRatioCorrection, pixelRatio) { }
 
+    /// <summary>
+    /// Create a new pixel map of a specified height and width.
+    /// </summary>
+    /// <param name="height">The height the map.</param>
+    /// <param name="width">The width the map.</param>
+    /// <param name="pixelRatioCorrection">
+    /// Optional pixel ratio correction type. This is used to correct drawing size if pixel representation
+    /// in the terminal is not square.
+    /// </param>
+    /// <param name="pixelRatio">
+    /// The ratio between pixel height and width. Note this must be a number greater than or equal to one.
+    /// </param>
+    /// <exception cref="ArgumentException">
+    /// Thrown if the specified size or pixel ratio are invalid.
+    /// </exception>
     public PixelMap(
             int height,
             int width,
             PixelRatioCorrection pixelRatioCorrection = PixelRatioCorrection.NoCorrection,
             int pixelRatio = 1)
     {
+        height.Validate(ValidatorComparison.GT, nameof(height));
+        width.Validate(ValidatorComparison.GT, nameof(width));
+        pixelRatio.Validate(ValidatorComparison.GT_EQ, 1, nameof(pixelRatio));
+
         _logger.Debug($"Requested dimensions: {nameof(height)} = {height}, {nameof(width)} = {width}");
 
         PixelRatioCorrection = pixelRatioCorrection;
@@ -91,15 +124,39 @@ public class PixelMap
         }
     }
 
+    /// <summary>
+    /// Set the color of a specific pixel.
+    /// </summary>
+    /// <param name="row">Pixel row.</param>
+    /// <param name="col">Pixel column.</param>
+    /// <param name="color">Color to set pixel to.</param>
     public void SetPixelColor(int row, int col, Color color)
         => SetPixelColor(row..(row + 1), col..(col + 1), color);
 
+    /// <summary>
+    /// Set the color of a pixel range
+    /// </summary>
+    /// <param name="row">Pixel row.</param>
+    /// <param name="colRange">Pixel column range.</param>
+    /// <param name="color">Color to set pixels to.</param>
     public void SetPixelColor(int row, Range colRange, Color color)
         => SetPixelColor(row..(row + 1), colRange, color);
 
+    /// <summary>
+    /// Set the color of a pixel range
+    /// </summary>
+    /// <param name="rowRange">Pixel row range.</param>
+    /// <param name="col">Pixel column.</param>
+    /// <param name="color">Color to set pixels to.</param>
     public void SetPixelColor(Range rowRange, int col, Color color)
         => SetPixelColor(rowRange, col..(col + 1), color);
 
+    /// <summary>
+    /// Set the color of a pixel range
+    /// </summary>
+    /// <param name="rowRange">Pixel row range.</param>
+    /// <param name="colRange">Pixel column range.</param>
+    /// <param name="color">Color to set pixels to.</param>
     public void SetPixelColor(Range rowRange, Range colRange, Color color)
     {
         _logger.Trace($"Setting pixel range ({rowRange.ToRangeString()}) ({colRange.ToRangeString()}) to {color}");
@@ -181,6 +238,10 @@ public class PixelMap
         return (heightRangeFromStart, widthRangeFromStart);
     }
 
+    /// <summary>
+    /// Get a bit map representation of the pixel map. Ones (1) are used to represent any non-black
+    /// pixel. Black pixels are represented with zeros (0).
+    /// </summary>
     public virtual string ToBitMapString()
     {
         var sb = new StringBuilder();
