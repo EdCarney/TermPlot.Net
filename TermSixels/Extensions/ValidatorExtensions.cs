@@ -28,26 +28,15 @@ public static class ValidatorExtensions
     /// </exception>
     public static void Validate<T>(this T val, ValidatorComparison cmpType, T cmp, string? paramName = default) where T : INumber<T>
     {
-        bool condition = cmpType switch
+        (bool condition, string expectation) = cmpType switch
         {
-            ValidatorComparison.EQ => val == cmp,
-            ValidatorComparison.GT => val > cmp,
-            ValidatorComparison.GT_EQ => val >= cmp,
-            ValidatorComparison.LT => val < cmp,
-            ValidatorComparison.LT_EQ => val <= cmp,
-            _ => false
+            ValidatorComparison.EQ => (val == cmp, "equal to"),
+            ValidatorComparison.GT => (val > cmp, "greater than"),
+            ValidatorComparison.GT_EQ => (val >= cmp, "greater than or equal to"),
+            ValidatorComparison.LT => (val < cmp, "less than"),
+            ValidatorComparison.LT_EQ => (val <= cmp, "less than or equal to"),
+            _ => throw new ArgumentException($"Unknown comparison type {cmpType}", nameof(cmpType))
         };
-
-        string expectation = cmpType switch
-        {
-            ValidatorComparison.EQ => "equal to",
-            ValidatorComparison.GT => "greater than",
-            ValidatorComparison.GT_EQ => "greater than or equal to",
-            ValidatorComparison.LT => "less than",
-            ValidatorComparison.LT_EQ => "less than or equal to",
-            _ => string.Empty
-        };
-
 
         if (!condition)
             throw paramName is null
