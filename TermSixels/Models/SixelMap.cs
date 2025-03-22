@@ -28,7 +28,7 @@ public class SixelMap
             .Select(color => new ColorRegister(color))
             .ToArray();
 
-        _logger.Debug($"Map dimensions: {Height} x {ColorRegisters.Count()} x {Width}");
+        _logger.Debug($"Map dimensions: height = {Height}, colors = {ColorRegisters.Count()}, width = {Width}");
 
         _sixels = new Sixel[Height][][];
 
@@ -95,7 +95,7 @@ public class SixelMap
             sb.AppendLine();
         }
 
-        _logger.Debug($"Final sixel image representation: \n{sb.ToString()}");
+        _logger.Trace($"Final sixel image representation: \n{sb.ToString()}");
 
         sb.Insert(0, SixelControlStatements.StartSixelSeq);
         sb.AppendLine(SixelControlStatements.TerminateSixelSeq);
