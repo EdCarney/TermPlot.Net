@@ -3,6 +3,9 @@ using TermSixels.Constants;
 
 namespace TermSixels.Models;
 
+/// <summary>
+/// A map representation of a sixel image.
+/// </summary>
 public class SixelMap
 {
     private static readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
@@ -12,12 +15,18 @@ public class SixelMap
     // are row -> color -> col
     private readonly Sixel[][][] _sixels;
 
+    /// <summary>
+    /// The unique color registers used in the map.
+    /// </summary>
     public ColorRegister[] ColorRegisters { get; }
 
     public int Height { get; }
 
     public int Width { get; }
 
+    /// <summary>
+    /// Create a sixel map from a pixel map.
+    /// </summary>
     public SixelMap(PixelMap pixelMap)
     {
         Height = pixelMap.Height / 6;
@@ -54,6 +63,10 @@ public class SixelMap
 
     }
 
+    /// <summary>
+    /// Generate the sixel sequence for this map. Includes the start and termination sequences,
+    /// so writing this value will start printing the sixel image.
+    /// </summary>
     public string ToSixelSequenceString()
     {
         var sb = new StringBuilder();

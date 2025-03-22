@@ -3,6 +3,9 @@ using System.Drawing;
 
 namespace TermSixels.Models;
 
+/// <summary>
+/// Representation of an individual sixel (six vertical pixels).
+/// </summary>
 public class Sixel
 {
     private const int _sixelSize = 6;
@@ -14,10 +17,28 @@ public class Sixel
 
     public char SixelChar { get; private set; }
 
+    /// <summary>
+    /// Create a new black sixel.
+    /// </summary>
     public Sixel() : this(new(_sixelSize)) { }
 
+    /// <summary>
+    /// Create a new black sixel from a bit mask.
+    /// </summary>
+    /// <param name="bitMask">Bit representation of the vertical pixels with the first value being the topmost vertical pixel.</param>
+    /// <exception cref="ArgumentException">
+    /// Thrown if bit mask is not exactly six bits long.
+    /// </exception>
     public Sixel(BitArray bitMask) : this(bitMask, Color.Black) { }
 
+    /// <summary>
+    /// Create a new colored sixel from a bit mask.
+    /// </summary>
+    /// <param name="bitMask">Bit representation of the vertical pixels with the first value being the topmost vertical pixel.</param>
+    /// <param name="color">Color of the sixel.</param>
+    /// <exception cref="ArgumentException">
+    /// Thrown if bit mask is not exactly six bits long.
+    /// </exception>
     public Sixel(BitArray bitMask, Color color)
     {
         Color = color;

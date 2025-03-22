@@ -4,13 +4,15 @@ using TermSixels.Interfaces;
 
 namespace TermSixels.Models;
 
+/// <summary>
+/// A pixel representation of a graph for plotting 2D data.
+/// </summary>
 public class PixelGraph : PixelMap
 {
     private readonly List<IPixelGraphSeries> _pixelSeries = new();
     private PixelGraphDrawingConfig _drawingConfig = new();
     private int _uncorrectedHeight;
     private int _uncorrectedWidth;
-
 
     public PixelGraph(
             int size,
@@ -116,9 +118,6 @@ public class PixelGraph : PixelMap
         double scaleFactorX = (double)(_uncorrectedWidth - dataDrawingAreaAjustmentX) / dataRangeX;
         double scaleFactorY = (double)(_uncorrectedHeight - dataDrawingAreaAjustmentY) / dataRangeY;
 
-        // System.Console.WriteLine($"Scale factor x: {scaleFactorX}");
-        // System.Console.WriteLine($"Scale factor y: {scaleFactorY}");
-
         // create anons for scaling points in x and y
         var scalePointX = (double x) => (x - minX) * scaleFactorX;
         var scalePointY = (double y) => (y - minY) * scaleFactorY;
@@ -140,18 +139,9 @@ public class PixelGraph : PixelMap
                 int rowStart = (int)scaledY - series.PointSize;
                 int rowEnd = (int)scaledY + series.PointSize;
 
-                // System.Console.WriteLine();
-                // System.Console.WriteLine($"Non-scaled point: ({point.x}, {point.y})");
-                // System.Console.WriteLine($"Scaled point: ({scaledX}, {scaledY})");
-
-                Range colRange = colStart..colEnd;
-                Range rowRange = ^rowEnd..^rowStart;
-                // System.Console.WriteLine($"Col range: {colRange.ToRangeString()}");
-                // System.Console.WriteLine($"Row range: {rowRange.ToRangeString()}");
-
                 // need to reverse drawing along y-axis since larger indexes
                 // mean further 'down' on the pixel map by default
-                SetPixelColor(rowRange, colStart..colEnd, series.Color);
+                SetPixelColor(^rowEnd..^rowStart, colStart..colEnd, series.Color);
             }
         }
     }

@@ -1,7 +1,7 @@
 using System.Collections;
+using TermSixels.Interfaces;
 using System.Drawing;
 using System.Numerics;
-using TermSixels.Interfaces;
 
 namespace TermSixels.Models;
 
