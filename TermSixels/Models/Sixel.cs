@@ -8,6 +8,8 @@ public class Sixel
     private const int _sixelSize = 6;
     private const int _sixelCharOffset = 63;
 
+    private static readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
     public Color Color { get; }
 
     public char SixelChar { get; private set; }
@@ -28,11 +30,16 @@ public class Sixel
 
     private char GetSixelCharFromBitMask(BitArray bitMask)
     {
-        int bitMaskVal = _sixelCharOffset;
+        int bitMaskVal = 0;
         for (int i = 0; i < bitMask.Length; i++)
         {
             bitMaskVal += (bitMask[i] ? 1 : 0) * (int)Math.Pow(2, i);
         }
-        return (char)bitMaskVal;
+
+        int finalBitMaskVal = bitMaskVal + _sixelCharOffset;
+
+        _logger.Trace($"Converted bit mask value {Convert.ToString(bitMaskVal, 2).PadLeft(6, '0')}: ({(char)bitMaskVal}) => ({(char)finalBitMaskVal})");
+
+        return (char)finalBitMaskVal;
     }
 }

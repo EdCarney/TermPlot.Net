@@ -5,6 +5,8 @@ namespace TermSixels.Models;
 
 public class SixelMap
 {
+    private static readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
     // sixels must be printed row by row, with all colors on a row printed
     // in sequence before moving on to the next row; so sixel dimensions
     // are row -> color -> col
@@ -25,6 +27,8 @@ public class SixelMap
             .AllUniqueColors
             .Select(color => new ColorRegister(color))
             .ToArray();
+
+        _logger.Debug($"Map dimensions: {Height} x {ColorRegisters.Count()} x {Width}");
 
         _sixels = new Sixel[Height][][];
 
@@ -52,7 +56,7 @@ public class SixelMap
 
     public string ToSixelSequenceString()
     {
-        var sb = new StringBuilder(SixelControlStatements.StartSixelSeq);
+        var sb = new StringBuilder();
 
         sb.AppendLine();
         foreach (var colorReg in ColorRegisters)
@@ -64,10 +68,26 @@ public class SixelMap
             for (int j = 0; j < ColorRegisters.Count(); j++)
             {
                 sb.Append(ColorRegisters[j].ToSixelUseString());
-                for (int k = 0; k < Width; k++)
+
+                // iterators for using repeat count
+                char prevChar = _sixels[i][j].First().SixelChar;
+                int consecutiveCharCount = 1;
+
+                for (int k = 1; k < Width; k++)
                 {
-                    sb.Append(_sixels[i][j][k].SixelChar);
+                    char currChar = _sixels[i][j][k].SixelChar;
+                    if (prevChar != currChar)
+                    {
+                        sb.Append($"!{consecutiveCharCount}{prevChar}");
+                        consecutiveCharCount = 0;
+                    }
+                    prevChar = currChar;
+                    consecutiveCharCount++;
                 }
+
+                // print final char
+                sb.Append($"!{consecutiveCharCount}{prevChar}");
+
                 sb.Append(SixelControlStatements.CarriageReturn);
                 sb.AppendLine();
             }
@@ -75,6 +95,9 @@ public class SixelMap
             sb.AppendLine();
         }
 
+        _logger.Debug($"Final sixel image representation: \n{sb.ToString()}");
+
+        sb.Insert(0, SixelControlStatements.StartSixelSeq);
         sb.AppendLine(SixelControlStatements.TerminateSixelSeq);
 
         return sb.ToString();

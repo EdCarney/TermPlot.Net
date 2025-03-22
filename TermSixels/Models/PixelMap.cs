@@ -7,6 +7,7 @@ namespace TermSixels.Models;
 public class PixelMap
 {
     private static readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
     private readonly Color[][] _pixels;
 
     public int Height { get; }
@@ -58,102 +59,51 @@ public class PixelMap
     }
 
     public Color this[int row, int col]
-    {
-        get
-        {
-            (row, col) = CorrectHeightWidth(row, col);
-            _pixels.ValidateBound(row);
-            _pixels.First().ValidateBound(col);
-
-            return _pixels[row][col];
-        }
-    }
+        => this[row..(row + 1), col..(col + 1)].First();
 
     public Color[] this[Range rowRange, int col]
-    {
-        get
-        {
-            _pixels.ValidateBound(rowRange);
-            _pixels.First().ValidateBound(col);
-
-            var (start, end) = _pixels.GetBoundsFromStart(rowRange);
-            var pixs = new Color[end - start];
-            for (int i = start; i < end; i++)
-                pixs[i - start] = _pixels[i][col];
-
-            return pixs;
-        }
-    }
+        => this[rowRange, col..(col + 1)];
 
     public Color[] this[int row, Range colRange]
+        => this[row..(row + 1), colRange];
+
+    public Color[] this[Range rowRange, Range colRange]
     {
         get
         {
-            (row, colRange) = CorrectHeightWidth(row, colRange);
-            _pixels.ValidateBound(row);
-            _pixels.First().ValidateBound(colRange);
-
-            return _pixels[row][colRange];
-        }
-    }
-
-    public Color[][] this[Range rowRange, Range colRange]
-    {
-        get
-        {
-            (rowRange, colRange) = CorrectHeightWidth(rowRange, colRange);
             _pixels.ValidateBound(rowRange);
             _pixels.First().ValidateBound(colRange);
 
             var (rowStart, rowEnd) = _pixels.GetBoundsFromStart(rowRange);
             var (colStart, colEnd) = _pixels.First().GetBoundsFromStart(colRange);
 
-            var pixs = new Color[rowEnd - rowStart]
-                .Select(row => new Color[colEnd - colStart])
-                .ToArray();
+            int numRows = rowEnd - rowStart;
+            int numCols = colEnd - colStart;
+            int numPixs = numRows * numCols;
+
+            int index = 0;
+            var pixs = new Color[numRows * numCols];
             for (int i = rowStart; i < rowEnd; i++)
                 for (int j = colStart; j < colEnd; j++)
-                    pixs[i - rowStart][j - colStart] = _pixels[i][j];
+                    pixs[index++] = _pixels[i][j];
 
             return pixs;
         }
     }
 
     public void SetPixelColor(int row, int col, Color color)
-    {
-        (row, col) = CorrectHeightWidth(row, col);
-        _pixels.ValidateBound(row);
-        _pixels.First().ValidateBound(col);
-
-        _pixels[row][col] = color;
-    }
+        => SetPixelColor(row..(row + 1), col..(col + 1), color);
 
     public void SetPixelColor(int row, Range colRange, Color color)
-    {
-        (row, colRange) = CorrectHeightWidth(row, colRange);
-        _pixels.ValidateBound(row);
-        _pixels.First().ValidateBound(colRange);
-
-        var (colStart, colEnd) = _pixels.First().GetBoundsFromStart(colRange);
-
-        for (int j = colStart; j < colEnd; j++)
-            _pixels[row][j] = color;
-    }
+        => SetPixelColor(row..(row + 1), colRange, color);
 
     public void SetPixelColor(Range rowRange, int col, Color color)
-    {
-        (rowRange, col) = CorrectHeightWidth(rowRange, col);
-        _pixels.ValidateBound(rowRange);
-        _pixels.First().ValidateBound(col);
-
-        var (rowStart, rowEnd) = _pixels.GetBoundsFromStart(rowRange);
-
-        for (int i = rowStart; i < rowEnd; i++)
-            _pixels[i][col] = color;
-    }
+        => SetPixelColor(rowRange, col..(col + 1), color);
 
     public void SetPixelColor(Range rowRange, Range colRange, Color color)
     {
+        _logger.Trace($"Setting pixel range ({rowRange.ToRangeString()}) ({colRange.ToRangeString()}) to {color}");
+
         (rowRange, colRange) = CorrectHeightWidth(rowRange, colRange);
 
         _pixels.ValidateBound(rowRange);
@@ -169,15 +119,23 @@ public class PixelMap
 
     private (int height, int width) CorrectHeightWidth(int height, int width)
     {
+        _logger.Trace($"Original pixel coordinate: ({height}, {width})");
+
         switch (PixelRatioCorrection)
         {
             case PixelRatioCorrection.AdjustWidth:
-                return (height, width * PixelRatio);
+                width *= PixelRatio;
+                break;
             case PixelRatioCorrection.AdjustHeight:
-                return (height * PixelRatio, width);
+                height *= PixelRatio;
+                break;
             default:
-                return (height, width);
+                break;
         }
+
+        _logger.Trace($"Corrected pixel coordinate: ({height}, {width})");
+
+        return (height, width);
     }
 
     private (Range heightRange, int width) CorrectHeightWidth(Range heightRange, int width)
@@ -197,6 +155,8 @@ public class PixelMap
 
     private (Range heightRange, Range widthRange) CorrectHeightWidth(Range heightRange, Range widthRange, int maxHeight, int maxWidth)
     {
+        _logger.Trace($"Original pixel range: height = ({heightRange.ToRangeString()}), width = ({widthRange.ToRangeString()})");
+
         var widthRangeFromStart = widthRange.FromStart(maxWidth);
         var heightRangeFromStart = heightRange.FromStart(maxHeight);
 
@@ -205,14 +165,20 @@ public class PixelMap
             case PixelRatioCorrection.AdjustWidth:
                 int wStart = widthRangeFromStart.Start.Value * (widthRange.Start.IsFromEnd ? 1 : PixelRatio);
                 int wEnd = widthRangeFromStart.End.Value * (widthRange.End.IsFromEnd ? 1 : PixelRatio);
-                return (heightRangeFromStart, wStart..wEnd);
+                widthRangeFromStart = wStart..wEnd;
+                break;
             case PixelRatioCorrection.AdjustHeight:
                 int hStart = heightRangeFromStart.Start.Value * (heightRange.Start.IsFromEnd ? 1 : PixelRatio);
                 int hEnd = heightRangeFromStart.End.Value * (heightRange.End.IsFromEnd ? 1 : PixelRatio);
-                return (hStart..hEnd, widthRangeFromStart);
+                heightRangeFromStart = hStart..hEnd;
+                break;
             default:
-                return (heightRange, widthRange);
+                break;
         }
+
+        _logger.Trace($"Corrected pixel range: height = ({heightRangeFromStart.ToRangeString()}), width = ({widthRangeFromStart.ToRangeString()})");
+
+        return (heightRangeFromStart, widthRangeFromStart);
     }
 
     public virtual string ToBitMapString()
